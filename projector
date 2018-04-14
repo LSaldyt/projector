@@ -16,9 +16,7 @@ def main(args):
     os.chdir('projects')
     try:
         repos = requests.get('https://api.github.com/users/{}/repos'.format(user)).json()
-        print(type(repos))
         for repo in repos:
-            print(repo)
             clone_url = repo['clone_url']
             url = clone_url[:-4]
 
