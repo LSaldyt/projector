@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+import requests, subprocess, shutil, sys, os
+
+def make(dname):
+    if not os.path.exists(dname):
+        os.mkdir(dname)
+
+def main(args):
+    assert len(args) > 0, 'Username must be supplied as first argument'
+    user = args[0]
+
+    original = os.getcwd()
+    home = os.path.expanduser("~")
+    os.chdir(home)
+    make('projects')
+    os.chdir('projects')
+    try:
+        repos = requests.get('https://api.github.com/users/{}/repos'.format(user)).json()
+        print(type(repos))
+        for repo in repos:
+            print(repo)
+            clone_url = repo['clone_url']
+            url = clone_url[:-4]
+
+            result = requests.get(url)
+            category = result.text.split('[category:')[1].split(']')[0]
+
+            make(category)
+            os.chdir(category)
+            subprocess.call(['git', 'clone', clone_url])
+            os.chdir('..')
+    finally:
+        os.chdir(original)
+
+
+
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
