@@ -17,16 +17,19 @@ def main(args):
     try:
         repos = requests.get('https://api.github.com/users/{}/repos'.format(user)).json()
         for repo in repos:
-            clone_url = repo['clone_url']
-            url = clone_url[:-4]
+            try:
+                clone_url = repo['clone_url']
+                url = clone_url[:-4]
 
-            result = requests.get(url)
-            category = result.text.split('[category:')[1].split(']')[0]
+                result = requests.get(url)
+                category = result.text.split('[category:')[1].split(']')[0]
 
-            make(category)
-            os.chdir(category)
-            subprocess.call(['git', 'clone', clone_url])
-            os.chdir('..')
+                make(category)
+                os.chdir(category)
+                subprocess.call(['git', 'clone', clone_url])
+                os.chdir('..')
+            except:
+                print('Skipping {}'.format(url))
     finally:
         os.chdir(original)
 
