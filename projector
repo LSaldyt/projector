@@ -22,7 +22,10 @@ def main(args):
                 url = clone_url[:-4]
 
                 result = requests.get(url)
-                category = result.text.split('[category:')[1].split(']')[0]
+                try:
+                    category = result.text.split('[category:')[1].split(']')[0]
+                except:
+                    category = 'misc'
 
                 make(category)
                 os.chdir(category)
